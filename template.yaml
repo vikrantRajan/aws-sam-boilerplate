@@ -1,0 +1,133 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  item-service
+
+  Sample SAM Template for item-service
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 20
+
+Resources:
+  CommonFunction:
+    Type: AWS::Serverless::LayerVersion # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      LayerName: common_functions
+      ContentUri: common/
+      CompatibleArchitectures: 
+        - x86_64
+      CompatibleRuntimes: 
+        - python3.8
+    Metadata:
+      BuildMethod: python3.8
+  CreateItemFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      FunctionName: item-service-create-item
+      CodeUri: create_item/
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Architectures:
+      - x86_64
+      Layers:
+        - !Ref CommonFunction
+      Policies:
+      - AmazonDynamoDBFullAccess
+      Events:
+        CreateItemApi:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /items/create_item
+            Method: post
+  
+  DeleteItemFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      FunctionName: item-service-delete-item
+      CodeUri: delete_item/
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Architectures:
+      - x86_64
+      Layers:
+        - !Ref CommonFunction
+      Policies:
+      - AmazonDynamoDBFullAccess
+      Events:
+        DeleteItemApi:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /items/delete_item
+            Method: post
+  
+  UpdateItemFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      FunctionName: item-service-update-item
+      CodeUri: update_item/
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Architectures:
+      - x86_64
+      Layers:
+        - !Ref CommonFunction
+      Policies:
+      - AmazonDynamoDBFullAccess
+      Events:
+        UpdateItemApi:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /items/update_item
+            Method: post
+
+  GetItemFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      FunctionName: item-service-get-item
+      CodeUri: get_item/
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      Architectures:
+      - x86_64
+      Layers:
+        - !Ref CommonFunction
+      Policies:
+      - AmazonDynamoDBFullAccess
+      Events:
+        GetItemApi:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /items/get_item
+            Method: get
+
+
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  CreateItemApi:
+    Description: API Gateway endpoint URL for Prod stage for Create Item function
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/items/create_item"
+  CreateItemFunction:
+    Description: Create Item Lambda Function ARN
+    Value: !GetAtt CreateItemFunction.Arn
+  DeleteItemApi:
+    Description: API Gateway endpoint URL for Prod stage for Delete Item function
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/items/delete_item"
+  DeleteItemFunction:
+    Description: Delete Item Lambda Function ARN
+    Value: !GetAtt DeleteItemFunction.Arn
+  UpdateItemApi:
+    Description: API Gateway endpoint URL for Prod stage for Update Item function
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/items/update_item"
+  UpdateItemFunction:
+    Description: Update Item Lambda Function ARN
+    Value: !GetAtt UpdateItemFunction.Arn
+  GetItemApi:
+    Description: API Gateway endpoint URL for Prod stage for Get Item function
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/items/get_item"
+  GetItemFunction:
+    Description: Get Item Lambda Function ARN
+    Value: !GetAtt GetItemFunction.Arn

@@ -1,0 +1,12 @@
+version = 0.1
+[prod]
+[prod.deploy]
+[default.global.parameters]
+stack_name = "item-service"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1rvbxpju8d438"
+s3_prefix = "item-service"
+region = "us-east-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+image_repositories = []
+
